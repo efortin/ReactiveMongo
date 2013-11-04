@@ -25,7 +25,6 @@ object BuildSettings {
     mappings in (Compile, packageSrc) ~= filter)
 }
 
-
 object Format {
   import com.typesafe.sbt.SbtScalariform._
 
@@ -67,15 +66,15 @@ object ShellPrompt {
 
   def currBranch = (
     ("git status -sb" lines_! devnull headOption)
-    getOrElse "-" stripPrefix "## ")
+      getOrElse "-" stripPrefix "## ")
 
   val buildShellPrompt = {
     (state: State) =>
-      {
-        val currProject = Project.extract(state).currentProject.id
-        "%s:%s:%s> ".format(
-          currProject, currBranch, BuildSettings.buildVersion)
-      }
+    {
+      val currProject = Project.extract(state).currentProject.id
+      "%s:%s:%s> ".format(
+        currProject, currBranch, BuildSettings.buildVersion)
+    }
   }
 }
 
@@ -88,7 +87,6 @@ object Resolvers {
 
 object Dependencies {
   val netty = "io.netty" % "netty" % "3.6.5.Final" cross CrossVersion.Disabled
-
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.2.1"
 
   val iteratees = "com.typesafe.play" %% "play-iteratees" % "2.2.0"
@@ -134,4 +132,3 @@ object ReactiveMongoBuild extends Build {
       libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-compiler" % _)
     )) dependsOn (bson)
 }
-
