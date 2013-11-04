@@ -22,46 +22,9 @@ object BuildSettings {
     scalacOptions in (Compile, doc) ++= Seq("-unchecked", "-deprecation", "-diagrams", "-implicits"),
     shellPrompt := ShellPrompt.buildShellPrompt,
     mappings in (Compile, packageBin) ~= filter,
-    mappings in (Compile, packageSrc) ~= filter,
-    mappings in (Compile, packageDoc) ~= filter) ++ Publish.settings // ++ Format.settings
+    mappings in (Compile, packageSrc) ~= filter)
 }
 
-object Publish {
-  object TargetRepository {
-    def local: Project.Initialize[Option[sbt.Resolver]] = version { (version: String) =>
-      val localPublishRepo = "/Volumes/Data/code/repository"
-      if (version.trim.endsWith("SNAPSHOT"))
-        Some(Resolver.file("snapshots", new File(localPublishRepo + "/snapshots")))
-      else Some(Resolver.file("releases", new File(localPublishRepo + "/releases")))
-    }
-    def sonatype: Project.Initialize[Option[sbt.Resolver]] = version { (version: String) =>
-      val nexus = "https://oss.sonatype.org/"
-      if (version.trim.endsWith("SNAPSHOT"))
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    }
-  }
-  lazy val settings = Seq(
-    publishMavenStyle := true,
-    publishTo <<= TargetRepository.sonatype,
-    publishArtifact in Test := false,
-    pomIncludeRepository := { _ => false },
-    licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
-    homepage := Some(url("http://reactivemongo.org")),
-    pomExtra := (
-      <scm>
-        <url>git://github.com/zenexity/ReactiveMongo.git</url>
-        <connection>scm:git://github.com/zenexity/ReactiveMongo.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>sgodbillon</id>
-          <name>Stephane Godbillon</name>
-          <url>http://stephane.godbillon.com</url>
-        </developer>
-      </developers>))
-}
 
 object Format {
   import com.typesafe.sbt.SbtScalariform._

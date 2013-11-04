@@ -12,6 +12,7 @@ import org.jboss.netty.channel.{ Channel, ChannelPipeline, Channels }
 import reactivemongo.core.protocol._
 import reactivemongo.api.ReadPreference
 import reactivemongo.bson._
+import com.typesafe.config.ConfigFactory
 
 package object utils {
   def updateFirst[A, M[T] <: Iterable[T]](coll: M[A])(ƒ: A => Option[A])(implicit cbf: CanBuildFrom[M[_], A, M[A]]): M[A] = {
@@ -309,7 +310,15 @@ class ChannelFactory(bossExecutor: Executor = Executors.newCachedThreadPool, wor
     channel
   }
 
-  val channelFactory = new NioClientSocketChannelFactory(bossExecutor, workerExecutor)
+  val channelFactory = {
+    // Add configuration of thread pool size for worker and boss pool rather
+    val conf = ConfigFactory.load()
+    val nrOfWorkers = conf.getInt("mongo-async-driver.pools.worker-nr-of-thread")
+    val nrOfBoss = conf.getInt("mongo-async-driver.pools.boss-nr-of-thread")
+
+    logger.debug("Channel Factory: nrBossExecutor -> " + nrOfWorkers + "nrWorker -> " + nrOfBoss);
+    new NioClientSocketChannelFactory(bossExecutor, workerExecutor, nrOfBoss, nrOfWorkers)
+  }
 
   private val bufferFactory = new HeapChannelBufferFactory(java.nio.ByteOrder.LITTLE_ENDIAN)
 
