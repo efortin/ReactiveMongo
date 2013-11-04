@@ -1,7 +1,7 @@
 ReactiveMongo fork
 =========================== 
 
-This is a the standard client https://github.com/typesafehub/config. Configuration parameters
+This is a fork of the standard client https://github.com/typesafehub/config. Configuration parameters
 has been added to make easier thread pool size configurations.
 
 `mongo-async-driver {`
